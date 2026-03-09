@@ -94,7 +94,7 @@ Explore the Traefik Manager interface and workflows. Click on a category below t
 - **TLS certificates** — view all certificates from `acme.json` with expiry tracking
 - **Plugin viewer** — inspect plugins configured in your static `traefik.yml`
 - **Access logs** — stream and filter Traefik access logs in the browser
-- **Docker container view** — see running containers via the Docker socket
+- **Docker routes view** — see all routes discovered via Docker labels pulled directly from the Traefik API
 - **Automatic backups** — every config change creates a timestamped backup of `dynamic.yml`
 - **Built-in auth** — password-protected with bcrypt hashing, session management, and CSRF protection
 - **First-run setup wizard** — configure everything (domains, API URL, cert resolver, visible tabs, password) on first launch
@@ -152,15 +152,12 @@ Open **http://your-server:5000** — the setup wizard will guide you through the
 | `/path/to/traefik/acme.json` | `/app/acme.json` | Optional | Enables the **Certs** tab |
 | `/path/to/traefik/traefik.yml` | `/app/traefik.yml` | Optional | Enables the **Plugins** tab |
 | `/path/to/traefik/logs/access.log` | `/app/logs/access.log` | Optional | Enables the **Logs** tab |
-| `/var/run/docker.sock` | `/var/run/docker.sock` | Optional | Enables the **Docker** tab |
-
-> **Note:** The docker.sock is used to retrieve metadata such as container labels and IPs. It isn't required for monitoring (@docker) when using docker labels and is only necessary if you want the Docker Tab to display extra container information.
 
 ---
 
 ## Optional Monitoring Tabs
 
-Traefik Manager includes four optional views that require additional mounts. They can be enabled during the setup wizard or toggled anytime in Settings. If a required file isn't mounted yet, the tab will show the exact line to add to your compose file.
+Traefik Manager includes four optional views that can be enabled during the setup wizard or toggled anytime in Settings. If a required file is not mounted yet, the tab will show the exact line to add to your compose file.
 
 ### Certs tab
 
@@ -198,14 +195,7 @@ volumes:
 
 > Traefik must be restarted after adding `accessLog` to `traefik.yml`. Traefik Manager does not need to restart for any of these mounts.
 
-### Docker tab
-
-Mount the Docker socket for extra information - Not required to view @docker routing:
-
-```yaml
-volumes:
-  - /var/run/docker.sock:/var/run/docker.sock:ro
-```
+---
 
 ## Full compose example (all monitoring enabled)
 
@@ -228,7 +218,6 @@ services:
       - /path/to/traefik/acme.json:/app/acme.json:ro
       - /path/to/traefik/traefik.yml:/app/traefik.yml:ro
       - /path/to/traefik/logs/access.log:/app/logs/access.log:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
 ```
 
 ---
@@ -317,13 +306,15 @@ All settings are saved to `manager.yml` inside the config volume. The setup wiza
 
 ## Resetting your password
 
-If you forget your password, remove the `password_hash` line from `manager.yml` and restart the container. The setup wizard will appear again for the password step.
+If you forget your password, remove the `password_hash` line from `manager.yml` and logout. The setup wizard will appear again for the password step.
 
 ```bash
-# Edit manager.yml inside your config volume
 nano /path/to/traefik-manager/config/manager.yml
+```
 
-# Remove or blank the password_hash line, then restart
+Remove or blank the `password_hash` line, then:
+
+```bash
 docker restart traefik-manager
 ```
 
@@ -371,4 +362,3 @@ Pull requests are welcome. For larger changes, please open an issue first to dis
 ## License
 
 [GPL-3.0 license](LICENSE)
-
