@@ -23,6 +23,3 @@ services:
 
       # Optional — mount to enable the Logs tab
       # - /path/to/traefik/logs/access.log:/app/logs/access.log:ro
-
-      # Optional — mount the Docker socket for extra information - Not required to view @docker routing
-      # - /var/run/docker.sock:/var/run/docker.sock:ro
