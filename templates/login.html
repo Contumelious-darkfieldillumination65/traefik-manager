@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if setup_mode %}Set Up Traefik Manager{% else %}Sign In — Traefik Manager{% endif %}</title>
+    <link rel="icon" type="image/x-icon" href="https://user.fm/files/v2-1b91adfdc6068ede7e20f5fe6bc80e41/fav.ico">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        :root {
+            --bg:       #0d1117;
+            --card:     #161b22;
+            --border:   #30363d;
+            --muted:    #8b949e;
+            --text:     #e6edf3;
+            --blue:     #24a1de;
+            --green:    #3fb950;
+            --red:      #f85149;
+            --input-bg: #0d1117;
+            --btn-secondary-bg: #21262d;
+            --btn-secondary-hover: #30363d;
+        }
+        [data-theme="light"] {
+            --bg:       #f6f8fa;
+            --card:     #ffffff;
+            --border:   #d0d7de;
+            --muted:    #656d76;
+            --text:     #1f2328;
+            --blue:     #0969da;
+            --green:    #1a7f37;
+            --red:      #d1242f;
+            --input-bg: #ffffff;
+            --btn-secondary-bg: #f6f8fa;
+            --btn-secondary-hover: #eaeef2;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            width: 100%;
+            padding: 36px 32px;
+        }
+        .card-login  { max-width: 380px; }
+        .card-wizard { max-width: 480px; }
+
+        .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; }
+        .logo-icon { font-size: 28px; color: var(--blue); }
+        .logo-text { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; }
+        .logo-text span { color: var(--blue); }
+
+        
+        .steps { display: flex; align-items: center; margin-bottom: 28px; }
+        .step-dot {
+            width: 28px; height: 28px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: 700;
+            border: 2px solid var(--border);
+            color: var(--muted); background: var(--card);
+            flex-shrink: 0; transition: all 0.2s; position: relative; z-index: 1;
+        }
+        .step-dot.active  { border-color: var(--blue); color: var(--blue); background: rgba(36,161,222,0.1); }
+        .step-dot.done    { border-color: var(--green); color: #fff; background: var(--green); }
+        .step-line { flex: 1; height: 2px; background: var(--border); transition: background 0.3s; }
+        .step-line.done { background: var(--green); }
+
+        .step-panel { display: none; }
+        .step-panel.active { display: block; }
+
+        .step-title    { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+        .step-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 20px; line-height: 1.5; }
+
+        .field { margin-bottom: 14px; }
+        label {
+            display: block; font-size: 11px; font-weight: 700;
+            color: var(--muted); text-transform: uppercase;
+            letter-spacing: 0.05em; margin-bottom: 5px;
+        }
+        input[type="text"], input[type="password"], input[type="url"] {
+            width: 100%; background: var(--input-bg);
+            border: 1px solid var(--border); border-radius: 8px;
+            padding: 10px 12px; font-size: 13px; color: var(--text);
+            font-family: 'Inter', sans-serif; outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        input[type="password"] { font-family: 'JetBrains Mono', monospace; }
+        input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(36,161,222,0.1); }
+        .field-hint { font-size: 11px; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+
+        .btn-row { display: flex; gap: 8px; margin-top: 20px; }
+        .btn-primary {
+            flex: 1; background: var(--blue); color: #fff;
+            border: none; border-radius: 8px;
+            padding: 11px; font-size: 13px; font-weight: 600;
+            font-family: 'Inter', sans-serif; cursor: pointer;
+            transition: filter 0.15s;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .btn-primary:hover  { filter: brightness(1.1); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; filter: none; }
+        .btn-secondary {
+            background: var(--btn-secondary-bg); color: var(--text);
+            border: 1px solid var(--border); border-radius: 8px;
+            padding: 11px 18px; font-size: 13px; font-weight: 600;
+            font-family: 'Inter', sans-serif; cursor: pointer;
+            transition: background 0.15s;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .btn-secondary:hover { background: var(--btn-secondary-hover); }
+        .btn-inline {
+            background: none; border: 1px solid var(--border);
+            border-radius: 6px; padding: 6px 10px;
+            font-size: 11px; font-weight: 600; color: var(--muted);
+            cursor: pointer; font-family: 'Inter', sans-serif;
+            transition: all 0.15s; white-space: nowrap;
+            display: inline-flex; align-items: center; gap: 4px;
+        }
+        .btn-inline:hover { border-color: var(--blue); color: var(--blue); }
+
+        .banner {
+            border-radius: 8px; padding: 10px 12px; font-size: 12px;
+            margin-bottom: 14px;
+            display: flex; align-items: flex-start; gap: 8px; line-height: 1.4;
+        }
+        .banner-error   { background: rgba(248,81,73,0.1); border: 1px solid rgba(248,81,73,0.3); color: var(--red); }
+        .banner-success { background: rgba(63,185,80,0.1); border: 1px solid rgba(63,185,80,0.3); color: var(--green); }
+        .banner-info    { background: rgba(36,161,222,0.08); border: 1px solid rgba(36,161,222,0.2); color: var(--blue); }
+
+        .api-test-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+        #apiTestResult { font-size: 11px; color: var(--muted); }
+
+        .tab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .tab-toggle-row {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 12px; border-radius: 8px; cursor: pointer;
+            border: 1px solid var(--border); background: var(--input-bg);
+            transition: border-color 0.15s; user-select: none;
+        }
+        .tab-toggle-row:hover { border-color: var(--blue); }
+        .tab-toggle-label { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text); }
+        .tab-toggle-label i { color: var(--muted); font-size: 14px; }
+        .toggle-switch {
+            width: 32px; height: 18px; border-radius: 99px;
+            background: var(--border); position: relative;
+            transition: background 0.2s; flex-shrink: 0;
+        }
+        .toggle-switch.on { background: var(--blue); }
+        .toggle-knob {
+            position: absolute; top: 2px; left: 2px;
+            width: 14px; height: 14px; border-radius: 50%;
+            background: #fff; transition: transform 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+        .toggle-switch.on .toggle-knob { transform: translateX(14px); }
+
+        .welcome-icon {
+            width: 56px; height: 56px; border-radius: 14px;
+            background: rgba(36,161,222,0.1); border: 1px solid rgba(36,161,222,0.2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 26px; color: var(--blue); margin-bottom: 20px;
+        }
+        .feature-list { list-style: none; margin: 16px 0 24px; }
+        .feature-list li {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 13px; color: var(--muted);
+            padding: 8px 0; border-bottom: 1px solid var(--border);
+        }
+        .feature-list li:last-child { border-bottom: none; }
+        .feature-list li i { color: var(--blue); font-size: 15px; flex-shrink: 0; }
+
+        .topbar { display: flex; justify-content: flex-end; margin-bottom: 16px; }
+        .theme-toggle {
+            background: none; border: 1px solid var(--border);
+            border-radius: 8px; padding: 6px 10px;
+            color: var(--muted); cursor: pointer; font-size: 14px;
+            transition: border-color 0.15s, color 0.15s;
+        }
+        .theme-toggle:hover { border-color: var(--blue); color: var(--blue); }
+
+        .footer { margin-top: 20px; font-size: 12px; color: var(--muted); text-align: center; }
+        .footer a { color: var(--muted); text-decoration: none; }
+        .footer a:hover { color: var(--text); }
+
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+{% if not setup_mode %}
+
+<div style="width:100%;max-width:380px">
+    <div class="topbar">
+        <button class="theme-toggle" onclick="cycleTheme()" title="Toggle theme">
+            <i class="ph-bold ph-moon" id="themeIcon"></i>
+        </button>
+    </div>
+    <div class="card card-login">
+        <div class="logo">
+            <i class="ph-fill ph-traffic-signal logo-icon"></i>
+            <span class="logo-text">Traefik <span>Manager</span></span>
+        </div>
+        <div class="step-title">Sign in</div>
+        <p class="step-subtitle">Enter your password to access Traefik Manager.</p>
+        {% if error %}
+        <div class="banner banner-error">
+            <i class="ph-bold ph-warning-circle" style="flex-shrink:0;margin-top:1px"></i>
+            {{ error }}
+        </div>
+        {% endif %}
+        <form method="POST" action="{{ url_for('login') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <input type="hidden" name="next" value="{{ next }}">
+            <div class="field">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password"
+                       placeholder="Your password" autofocus autocomplete="current-password">
+            </div>
+            <div class="btn-row">
+                <button type="submit" class="btn-primary">
+                    <i class="ph-bold ph-sign-in"></i> Sign in
+                </button>
+            </div>
+        </form>
+    </div>
+    <div class="footer">
+        <a href="https://github.com/traefik/traefik" target="_blank">Traefik</a>
+        &nbsp;·&nbsp;
+        <a href="https://github.com/chr0nzz/traefik-manager" target="_blank">Traefik Manager</a>
+    </div>
+</div>
+
+{% else %}
+
+<div style="width:100%;max-width:480px">
+    <div class="topbar">
+        <button class="theme-toggle" onclick="cycleTheme()" title="Toggle theme">
+            <i class="ph-bold ph-moon" id="themeIcon"></i>
+        </button>
+    </div>
+    <div class="card card-wizard">
+        <div class="logo">
+            <i class="ph-fill ph-traffic-signal logo-icon"></i>
+            <span class="logo-text">Traefik <span>Manager</span></span>
+        </div>
+
+        
+        <div class="steps" id="stepIndicator" style="display:none">
+            <div class="step-dot active" id="dot-1">1</div>
+            <div class="step-line" id="line-1"></div>
+            <div class="step-dot" id="dot-2">2</div>
+            <div class="step-line" id="line-2"></div>
+            <div class="step-dot" id="dot-3">3</div>
+            <div class="step-line" id="line-3"></div>
+            <div class="step-dot" id="dot-4"><i class="ph-bold ph-lock-key" style="font-size:11px"></i></div>
+        </div>
+
+        
+        <div id="globalError" class="banner banner-error" style="display:none">
+            <i class="ph-bold ph-warning-circle" style="flex-shrink:0;margin-top:1px"></i>
+            <span id="globalErrorMsg"></span>
+        </div>
+
+        
+        <div class="step-panel active" id="panel-0">
+            <div class="step-title" style="font-size:17px">Welcome to Traefik Manager</div>
+            <p class="step-subtitle" style="margin-top:6px">This quick setup takes about a minute. We'll configure your connection and create your password.</p>
+            <ul class="feature-list">
+                <li><i class="ph-bold ph-layout"></i> Manage routes, middlewares &amp; services</li>
+                <li><i class="ph-bold ph-activity"></i> Live stats from the Traefik API</li>
+                <li><i class="ph-bold ph-shield-check"></i> View TLS certificates &amp; access logs</li>
+                <li><i class="ph-bold ph-lock-key"></i> Protected by a password you set</li>
+            </ul>
+            <div class="btn-row">
+                <button class="btn-primary" onclick="goTo(1)">
+                    Get started <i class="ph-bold ph-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        
+        <div class="step-panel" id="panel-1">
+            <div class="step-title">Connection &amp; domains</div>
+            <p class="step-subtitle">Tell Traefik Manager how to reach your Traefik instance and which domains you manage.</p>
+
+            <div class="field">
+                <label for="s_domains">Domains</label>
+                <input type="text" id="s_domains" placeholder="example.com, example.net"
+                       value="{{ defaults.domains | join(', ') }}">
+                <p class="field-hint">Comma-separated list of base domains shown in the Add Route dropdown.</p>
+            </div>
+            <div class="field">
+                <label for="s_resolver">Certificate Resolver</label>
+                <input type="text" id="s_resolver" placeholder="cloudflare"
+                       value="{{ defaults.cert_resolver }}">
+                <p class="field-hint">Matches a resolver in your <code style="font-family:monospace;color:var(--blue)">traefik.yml</code> — e.g. <code style="font-family:monospace;color:var(--blue)">cloudflare</code> or <code style="font-family:monospace;color:var(--blue)">letsencrypt</code>.</p>
+            </div>
+            <div class="field">
+                <label for="s_apiurl">Traefik API URL</label>
+                <input type="text" id="s_apiurl" placeholder="http://traefik:8080"
+                       value="{{ defaults.traefik_api_url }}">
+                <p class="field-hint">Internal URL of the Traefik API. Usually <code style="font-family:monospace;color:var(--blue)">http://traefik:8080</code> when on the same Docker network.</p>
+                <div class="api-test-row">
+                    <button class="btn-inline" onclick="testApi()">
+                        <i class="ph-bold ph-plugs-connected"></i> Test connection
+                    </button>
+                    <span id="apiTestResult"></span>
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn-secondary" onclick="goTo(0)">
+                    <i class="ph-bold ph-arrow-left"></i> Back
+                </button>
+                <button class="btn-primary" onclick="validateStep1()">
+                    Next <i class="ph-bold ph-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        
+        <div class="step-panel" id="panel-2">
+            <div class="step-title">Optional monitoring</div>
+            <p class="step-subtitle">Enable extra views for deeper insight into your Traefik setup. All of these are optional — you can turn them on or off anytime in Settings.</p>
+
+            <div class="tab-grid">
+                <div class="tab-toggle-row" onclick="toggleSetupTab('docker')">
+                    <span class="tab-toggle-label"><i class="ph-bold ph-cube"></i> Docker</span>
+                    <div class="toggle-switch" id="sw-docker"><div class="toggle-knob"></div></div>
+                </div>
+                <div class="tab-toggle-row" onclick="toggleSetupTab('certs')">
+                    <span class="tab-toggle-label"><i class="ph-bold ph-shield-check"></i> Certs</span>
+                    <div class="toggle-switch" id="sw-certs"><div class="toggle-knob"></div></div>
+                </div>
+                <div class="tab-toggle-row" onclick="toggleSetupTab('plugins')">
+                    <span class="tab-toggle-label"><i class="ph-bold ph-puzzle-piece"></i> Plugins</span>
+                    <div class="toggle-switch" id="sw-plugins"><div class="toggle-knob"></div></div>
+                </div>
+                <div class="tab-toggle-row" onclick="toggleSetupTab('logs')">
+                    <span class="tab-toggle-label"><i class="ph-bold ph-terminal"></i> Logs</span>
+                    <div class="toggle-switch" id="sw-logs"><div class="toggle-knob"></div></div>
+                </div>
+            </div>
+
+            <div class="banner banner-info" style="margin-top:16px;margin-bottom:0">
+                <i class="ph-bold ph-info" style="flex-shrink:0;margin-top:1px"></i>
+                <span>Certs, Plugins, and Logs each need a file mounted into this container. If not yet mounted, each view will show the exact volume line to add to your <code style="font-family:monospace">docker-compose.yml</code>.</span>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn-secondary" onclick="goTo(1)">
+                    <i class="ph-bold ph-arrow-left"></i> Back
+                </button>
+                <button class="btn-primary" onclick="goTo(3)">
+                    Next <i class="ph-bold ph-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        
+        <div class="step-panel" id="panel-3">
+            <div class="step-title">Create your password</div>
+            <p class="step-subtitle">Protects access to Traefik Manager. You can change it anytime from Settings.</p>
+
+            <div class="field">
+                <label for="s_password">Password</label>
+                <input type="password" id="s_password" placeholder="At least 8 characters"
+                       autocomplete="new-password" oninput="checkPwMatch()">
+            </div>
+            <div class="field">
+                <label for="s_confirm">Confirm password</label>
+                <input type="password" id="s_confirm" placeholder="Repeat your password"
+                       autocomplete="new-password" oninput="checkPwMatch()">
+                <p class="field-hint" id="pwMatchHint" style="display:none"></p>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn-secondary" onclick="goTo(2)">
+                    <i class="ph-bold ph-arrow-left"></i> Back
+                </button>
+                <button class="btn-primary" id="finishBtn" onclick="submitSetup()" disabled>
+                    <i class="ph-bold ph-check"></i> Finish setup
+                </button>
+            </div>
+        </div>
+
+        
+        <form method="POST" action="{{ url_for('setup') }}" id="setupForm" style="display:none">
+            <input type="hidden" name="csrf_token"      value="{{ csrf_token }}">
+            <input type="hidden" name="domains"         id="f_domains">
+            <input type="hidden" name="cert_resolver"   id="f_resolver">
+            <input type="hidden" name="traefik_api_url" id="f_apiurl">
+            <input type="hidden" name="visible_tabs"    id="f_visible_tabs">
+            <input type="hidden" name="password"        id="f_password">
+            <input type="hidden" name="confirm"         id="f_confirm">
+        </form>
+
+    </div>
+    <div class="footer">
+        <a href="https://github.com/traefik/traefik" target="_blank">Traefik</a>
+        &nbsp;·&nbsp;
+        <a href="https://github.com/chr0nzz/traefik-manager" target="_blank">Traefik Manager</a>
+    </div>
+</div>
+{% endif %}
+
+<script>
+
+const THEME_KEY = 'tm-theme';
+function applyTheme(t) {
+    const r = t === 'system'
+        ? (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark') : t;
+    document.documentElement.setAttribute('data-theme', r);
+    const icon = document.getElementById('themeIcon');
+    if (icon) icon.className = r === 'light' ? 'ph-bold ph-sun' : 'ph-bold ph-moon';
+}
+function cycleTheme() {
+    const cur  = localStorage.getItem(THEME_KEY) || 'dark';
+    const next = cur === 'dark' ? 'light' : cur === 'light' ? 'system' : 'dark';
+    localStorage.setItem(THEME_KEY, next);
+    applyTheme(next);
+}
+applyTheme(localStorage.getItem(THEME_KEY) || 'dark');
+
+{% if setup_mode %}
+
+let currentStep = 0;
+const setupTabs = { docker: false, certs: false, plugins: false, logs: false };
+
+function goTo(step) {
+    hideError();
+    document.getElementById('panel-' + currentStep).classList.remove('active');
+    currentStep = step;
+    document.getElementById('panel-' + step).classList.add('active');
+
+    const indicator = document.getElementById('stepIndicator');
+    if (step === 0) {
+        indicator.style.display = 'none';
+    } else {
+        indicator.style.display = 'flex';
+        for (let i = 1; i <= 4; i++) {
+            const dot  = document.getElementById('dot-' + i);
+            const line = document.getElementById('line-' + i);
+            if (i < step) {
+                dot.className = 'step-dot done';
+                dot.innerHTML = '<i class="ph-bold ph-check" style="font-size:10px"></i>';
+                if (line) line.classList.add('done');
+            } else if (i === step) {
+                dot.className = 'step-dot active';
+                dot.innerHTML = i < 4 ? String(i) : '<i class="ph-bold ph-lock-key" style="font-size:11px"></i>';
+                if (line) line.classList.remove('done');
+            } else {
+                dot.className = 'step-dot';
+                dot.innerHTML = i < 4 ? String(i) : '<i class="ph-bold ph-lock-key" style="font-size:11px"></i>';
+                if (line) line.classList.remove('done');
+            }
+        }
+    }
+    const panel = document.getElementById('panel-' + step);
+    const first = panel.querySelector('input:not([type=hidden])');
+    if (first) setTimeout(() => first.focus(), 80);
+}
+
+function showError(msg) {
+    const el = document.getElementById('globalError');
+    document.getElementById('globalErrorMsg').textContent = msg;
+    el.style.display = 'flex';
+}
+function hideError() {
+    document.getElementById('globalError').style.display = 'none';
+}
+
+function validateStep1() {
+    hideError();
+    const domains = document.getElementById('s_domains').value.trim();
+    const apiUrl  = document.getElementById('s_apiurl').value.trim();
+    if (!domains) { showError('Enter at least one domain.'); return; }
+    if (!apiUrl)  { showError('Enter the Traefik API URL.'); return; }
+    if (!apiUrl.startsWith('http://') && !apiUrl.startsWith('https://')) {
+        showError('Traefik API URL must start with http:// or https://');
+        return;
+    }
+    goTo(2);
+}
+
+async function testApi() {
+    const url    = document.getElementById('s_apiurl').value.trim();
+    const result = document.getElementById('apiTestResult');
+    if (!url) { result.textContent = 'Enter a URL first.'; result.style.color = 'var(--muted)'; return; }
+    result.textContent = 'Testing…';
+    result.style.color = 'var(--muted)';
+    try {
+        const res = await fetch('/api/setup/test-connection', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url })
+        });
+        const d = await res.json();
+        if (d.ok) {
+            result.textContent = '✓ Connected — Traefik v' + d.version;
+            result.style.color = 'var(--green)';
+        } else {
+            result.textContent = '✗ ' + (d.error || 'Connection failed');
+            result.style.color = 'var(--red)';
+        }
+    } catch(e) {
+        result.textContent = '✗ Connection failed';
+        result.style.color = 'var(--red)';
+    }
+}
+
+function toggleSetupTab(tab) {
+    setupTabs[tab] = !setupTabs[tab];
+    document.getElementById('sw-' + tab).classList.toggle('on', setupTabs[tab]);
+}
+
+function checkPwMatch() {
+    const pw      = document.getElementById('s_password').value;
+    const confirm = document.getElementById('s_confirm').value;
+    const hint    = document.getElementById('pwMatchHint');
+    const btn     = document.getElementById('finishBtn');
+    if (!pw && !confirm) { hint.style.display = 'none'; btn.disabled = true; return; }
+    if (pw.length > 0 && pw.length < 8) {
+        hint.textContent = 'Password must be at least 8 characters.';
+        hint.style.color = 'var(--red)'; hint.style.display = 'block';
+        btn.disabled = true; return;
+    }
+    if (confirm && pw !== confirm) {
+        hint.textContent = 'Passwords do not match.';
+        hint.style.color = 'var(--red)'; hint.style.display = 'block';
+        btn.disabled = true; return;
+    }
+    if (pw.length >= 8 && pw === confirm) {
+        hint.textContent = '✓ Passwords match';
+        hint.style.color = 'var(--green)'; hint.style.display = 'block';
+        btn.disabled = false; return;
+    }
+    hint.style.display = 'none'; btn.disabled = true;
+}
+
+function submitSetup() {
+    hideError();
+    const pw      = document.getElementById('s_password').value;
+    const confirm = document.getElementById('s_confirm').value;
+    if (pw.length < 8)  { showError('Password must be at least 8 characters.'); return; }
+    if (pw !== confirm) { showError('Passwords do not match.'); return; }
+
+    document.getElementById('f_domains').value      = document.getElementById('s_domains').value.trim();
+    document.getElementById('f_resolver').value     = document.getElementById('s_resolver').value.trim();
+    document.getElementById('f_apiurl').value       = document.getElementById('s_apiurl').value.trim();
+    document.getElementById('f_visible_tabs').value = JSON.stringify(setupTabs);
+    document.getElementById('f_password').value     = pw;
+    document.getElementById('f_confirm').value      = confirm;
+
+    const btn = document.getElementById('finishBtn');
+    btn.disabled  = true;
+    btn.innerHTML = '<i class="ph-bold ph-circle-notch" style="animation:spin 0.8s linear infinite"></i> Saving…';
+
+    document.getElementById('setupForm').submit();
+}
+{% endif %}
+</script>
+</body>
+</html>
