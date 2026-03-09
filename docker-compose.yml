@@ -1,0 +1,27 @@
+services:
+  traefik-manager:
+    image: ghcr.io/chr0nzz/traefik-manager:latest
+    container_name: traefik-manager
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    environment:
+      # Required when running behind HTTPS — marks the session cookie as Secure
+      - COOKIE_SECURE=true
+    volumes:
+      # Required
+      - /path/to/traefik/dynamic.yml:/app/config/dynamic.yml
+      - /path/to/traefik-manager/config:/app/config
+      - /path/to/traefik-manager/backups:/app/backups
+
+      # Optional — mount to enable the Certs tab
+      # - /path/to/traefik/acme.json:/app/acme.json:ro
+
+      # Optional — mount to enable the Plugins tab
+      # - /path/to/traefik/traefik.yml:/app/traefik.yml:ro
+
+      # Optional — mount to enable the Logs tab
+      # - /path/to/traefik/logs/access.log:/app/logs/access.log:ro
+
+      # Optional — mount to enable the Docker tab @docker routes
+      # - /var/run/docker.sock:/var/run/docker.sock:ro

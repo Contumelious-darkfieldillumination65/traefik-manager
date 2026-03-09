@@ -1,0 +1,34 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Traefik Manager — manager.yml
+# This file is managed by the app. You can also edit it manually.
+# Restart the container after any manual changes.
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Domains ───────────────────────────────────────────────────────────────────
+domains:
+  - example.com
+
+# ── Certificate Resolver ──────────────────────────────────────────────────────
+cert_resolver: cloudflare
+
+# ── Traefik API URL ───────────────────────────────────────────────────────────
+traefik_api_url: http://traefik:8080
+
+# ── Authentication ────────────────────────────────────────────────────────────
+# Set to false if using external auth (Authentik, Authelia, Traefik basicAuth).
+# AUTH_ENABLED env var takes priority over this field.
+auth_enabled: true
+
+# ── Password Hash ─────────────────────────────────────────────────────────────
+# Set automatically by the app. DO NOT edit manually.
+# To reset: delete this line and restart — you'll be sent to the setup screen.
+password_hash: ""
+
+# ── Visible Tabs ──────────────────────────────────────────────────────────────
+# Show or hide optional tabs. Routes, Middlewares, and Services are always on.
+# Toggle these in the Settings modal or edit here and restart.
+visible_tabs:
+  docker: false
+  certs: false
+  plugins: false
+  logs: false
