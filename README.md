@@ -19,15 +19,70 @@ Add routes, manage middlewares, monitor services, and view TLS certificates — 
 
 ---
 
-## Screenshots
+## Interface Gallery
 
-> _Screenshots coming soon_
+Explore the Traefik Manager interface and workflows. Click on a category below to expand the screenshots.
 
-<!-- Replace the comments below with your actual screenshot paths once added -->
-<!-- ![Dashboard](screenshots/dashboard.png) -->
-<!-- ![Add Route](screenshots/add-route.png) -->
-<!-- ![Setup Wizard](screenshots/setup.png) -->
-<!-- ![Certificates](screenshots/certs.png) -->
+<details>
+<summary><b>Initial Setup Workflow</b></summary>
+<p align="center">
+<img src="docs/images/setup-1.png" width="25%" alt="Setup Step 1" />
+<img src="docs/images/setup-2.png" width="25%" alt="Setup Step 2" />
+<br />
+<img src="docs/images/setup-3.png" width="25%" alt="Setup Step 3" />
+<img src="docs/images/setup-4.png" width="25%" alt="Setup Step 4" />
+</p>
+<p align="center"><i>A guided 4-step process to get your Traefik instance connected and configured.</i></p>
+</details>
+
+<details>
+<summary><b>Routes & Traffic Management</b></summary>
+<table>
+<tr>
+<td width="33%"><img src="docs/images/routes.png" /><br /><b>Routes Overview</b>: Global view of entrypoints and rules.</td>
+<td width="33%"><img src="docs/images/route-details.png" /><br /><b>Route Details</b>: Deep dive into specific rule logic.</td>
+<td width="33%"><img src="docs/images/route-edit.png" /><br /><b>Edit Mode</b>: Real-time updates to your routing table.</td>
+</tr>
+</table>
+</details>
+
+<details>
+<summary><b>Services</b></summary>
+<p align="center">
+<img src="docs/images/services.png" width="48%" />
+<img src="docs/images/service-details.png" width="48%" />
+</p>
+<p align="center">Monitor backend health and target status for all registered services.</p>
+</details>
+
+<details>
+<summary><b>Middlewares</b></summary>
+<table>
+<tr>
+<td><img src="docs/images/middlewares.png" /><br /><b>List View</b>: Overview of active middleware.</td>
+<td><img src="docs/images/middleware-editing.png" /><br /><b>Editing</b>: Fine-tune headers and auth.</td>
+<td><img src="docs/images/add-middleware.png" /><br /><b>Add New</b>: Quick middleware creation.</td>
+</tr>
+</table>
+</details>
+
+<details>
+<summary><b>Plugins & Certificates</b></summary>
+<p align="center">
+<img src="docs/images/plugins.png" width="32%" />
+<img src="docs/images/plugins-details.png" width="32%" />
+<img src="docs/images/certs.png" width="32%" />
+</p>
+<p align="center">View active Go plugins and monitor TLS certificate expiration dates.</p>
+</details>
+
+<details>
+<summary><b>System Settings</b></summary>
+<p align="center">
+<img src="docs/images/setings.png" width="80%" />
+</p>
+<p align="center">Manage authentication, domain visibility, and UI customization.</p>
+</details>
 
 ---
 
