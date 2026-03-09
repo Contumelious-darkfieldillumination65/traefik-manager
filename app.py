@@ -13,7 +13,6 @@ from ruamel.yaml import YAML
 from ruamel.yaml import YAML as SafeYAML
 from io import StringIO
 
-APP_VERSION = "1.0.0"
 GITHUB_REPO = "chr0nzz/traefik-manager"
 
 
@@ -532,11 +531,26 @@ def api_ping():
         logger.debug(f"Ping failed: {e}")
     return jsonify({'ok': False, 'latency_ms': None})
 
+_cached_manager_version = None
+
 @app.route('/api/manager/version')
 @login_required
 def api_manager_version():
-    """Returns the manager's own version and latest GitHub release for update checks."""
-    return jsonify({'version': APP_VERSION, 'repo': GITHUB_REPO})
+    global _cached_manager_version
+    if _cached_manager_version is None:
+        try:
+            resp = requests.get(
+                f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest",
+                headers={"Accept": "application/vnd.github.v3+json"},
+                timeout=5
+            )
+            if resp.status_code == 200:
+                tag = resp.json().get("tag_name", "").lstrip("v")
+                if tag:
+                    _cached_manager_version = tag
+        except Exception:
+            pass
+    return jsonify({"version": _cached_manager_version or "", "repo": GITHUB_REPO})
 
 
 @app.route('/api/setup/test-connection', methods=['POST'])
