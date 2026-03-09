@@ -152,7 +152,7 @@ volumes:
   - /var/run/docker.sock:/var/run/docker.sock:ro
 ```
 
-## Full compose example (all tabs enabled)
+## Full compose example (all monitoring enabled)
 
 ```yaml
 services:
