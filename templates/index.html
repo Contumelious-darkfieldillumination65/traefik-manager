@@ -456,6 +456,32 @@
             .modal-overlay { align-items: flex-end; padding: 0; }
             .modal-box { max-width: 100% !important; width: 100%; border-radius: 18px 18px 0 0; max-height: 92vh; }
 
+            /* Settings modal — mobile bottom sheet layout */
+            #settingsModal .modal-box { display: flex; flex-direction: column; }
+            #settingsModal .modal-inner { flex-direction: column; min-height: unset; overflow: visible; }
+            #settingsModal .modal-sidebar {
+                width: 100%; flex-direction: row; border-right: none;
+                border-bottom: 1px solid var(--border);
+                padding: 6px 8px; gap: 4px; overflow-x: auto;
+                scrollbar-width: none; flex-shrink: 0;
+            }
+            #settingsModal .modal-sidebar::-webkit-scrollbar { display: none; }
+            #settingsModal .modal-sidebar-btn {
+                flex-direction: column; gap: 4px; padding: 6px 10px;
+                font-size: 11px; white-space: nowrap; flex-shrink: 0; width: auto;
+                border-bottom: 2px solid transparent; border-radius: 0;
+                background: transparent !important;
+            }
+            #settingsModal .modal-sidebar-btn i { font-size: 16px; }
+            #settingsModal .modal-sidebar-btn.active {
+                color: var(--blue); border-bottom-color: var(--blue);
+                background: transparent !important;
+            }
+            #settingsModal .modal-sidebar > div { flex: 1; overflow-y: auto; }
+            #settingsModal .modal-panel { padding: 16px; max-height: 54vh; overflow-y: auto; }
+            #settingsModal #tabToggles { grid-template-columns: 1fr !important; }
+            #settingsModal .tab-toggle-row { padding: 10px 12px; }
+
             .detail-panel { max-width: 100%; border-left: none; border-top: 1px solid var(--border); }
 
             .flow-diagram-row { flex-direction: column !important; align-items: stretch !important; }
